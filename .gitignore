@@ -1,0 +1,69 @@
+# Python bytecode and caches
+__pycache__/
+*.py[cod]
+*$py.class
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.tox/
+.nox/
+.coverage
+.coverage.*
+htmlcov/
+
+# Python environments and packaging
+.venv/
+venv/
+env/
+ENV/
+*.egg-info/
+build/
+dist/
+*.whl
+
+# IDE and OS
+.idea/
+.vscode/
+.DS_Store
+Thumbs.db
+*.swp
+
+# Credentials and local configuration — NEVER commit real secrets
+.env
+.env.*
+!.env.example
+*.pem
+*.p12
+*.pfx
+*.key
+*credentials*.json
+*secrets*.json
+
+# Execution artifacts: paper-trading and output files
+results/
+outputs/
+logs/
+*.log
+*.db
+*.db-*
+*.sqlite
+*.sqlite3
+*.sqlite3-*
+*.parquet
+*.arrow
+
+# Real market captures, downloaded odds, and manually reviewed mappings
+# Templates and clearly labeled synthetic fixtures are intentionally tracked.
+data/live_*/
+data/raw/
+data/captures/
+data/market_snapshots/
+data/us_discovery.json
+data/live_exchange.jsonl
+contracts.jsonl
+sportsbook_pairs.jsonl
+book_export.csv
+
+# Research runs and historical exports should be reviewed before publication
+legacy/v5/results/
+legacy/v5/data/archived_oct20_unsynchronized.csv

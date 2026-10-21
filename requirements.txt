@@ -1,0 +1,3 @@
+# Public Polymarket US market data SDK; optional for tests and synthetic fixture.
+polymarket-us>=0.1
+# Previous v5 joint optimizer dependencies are in legacy/v5/requirements.txt.

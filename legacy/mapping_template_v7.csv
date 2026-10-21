@@ -1,0 +1,3 @@
+provider,native_id,event_ticker,game,market,yes_outcome,no_outcome,outcome,start,fee,volume,rules_verified
+kalshi,REPLACE_VERIFIED_TICKER,KXNBAGAME-26OCT21ATLORL,2026-10-21_ATL_ORL,moneyline,ATL,ORL,,2026-10-21T23:00:00Z,0.02,0,false
+polymarket,REPLACE_VERIFIED_YES_TOKEN_ID,,2026-10-21_ATL_ORL,moneyline,,,ATL,2026-10-21T23:00:00Z,0.02,0,false

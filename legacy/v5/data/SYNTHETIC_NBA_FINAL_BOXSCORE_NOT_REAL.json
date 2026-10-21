@@ -1,0 +1,8 @@
+{
+  "game": {
+    "gameId": "0022600001",
+    "gameStatus": 3,
+    "homeTeam": {"players": [{"name": "Synthetic Player", "statistics": {"points": 13, "reboundsTotal": 7, "assists": 4}}]},
+    "awayTeam": {"players": []}
+  }
+}

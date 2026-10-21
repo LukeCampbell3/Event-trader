@@ -1,0 +1,73 @@
+[
+  {
+    "id": "abc123",
+    "sport_key": "basketball_nba",
+    "commence_time": "2026-10-20T23:00:00Z",
+    "home_team": "New York Knicks",
+    "away_team": "Philadelphia 76ers",
+    "bookmakers": [
+      {
+        "key": "draftkings",
+        "markets": [
+          {
+            "key": "player_points",
+            "last_update": "2026-10-20T20:59:00Z",
+            "line_type": "alternate",
+            "outcomes": [
+              {
+                "name": "Over",
+                "description": "Jalen Brunson",
+                "point": 24.5,
+                "price": -130
+              },
+              {
+                "name": "Under",
+                "description": "Jalen Brunson",
+                "point": 24.5,
+                "price": 100
+              }
+            ]
+          },
+          {
+            "key": "player_points",
+            "last_update": "2026-10-20T20:59:00Z",
+            "line_type": "main",
+            "outcomes": [
+              {
+                "name": "Over",
+                "description": "Jalen Brunson",
+                "point": 26.5,
+                "price": -110
+              },
+              {
+                "name": "Under",
+                "description": "Jalen Brunson",
+                "point": 26.5,
+                "price": -110
+              }
+            ]
+          },
+          {
+            "key": "player_points",
+            "last_update": "2026-10-20T20:59:00Z",
+            "line_type": "alternate",
+            "outcomes": [
+              {
+                "name": "Over",
+                "description": "Jalen Brunson",
+                "point": 28.5,
+                "price": 100
+              },
+              {
+                "name": "Under",
+                "description": "Jalen Brunson",
+                "point": 28.5,
+                "price": -130
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  }
+]
