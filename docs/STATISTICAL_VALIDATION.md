@@ -16,4 +16,4 @@ For a binary outcome, minimum sample size depends on baseline rate, effect size,
 
 ## V9 automated coverage
 
-`tests/test_v9_research.py` verifies threshold identity, strict rule mismatch rejection, timestamp order, future data exclusion, idempotent storage, executable-vs-indicative classification and deterministic replay. These are mathematical/engineering checks only.
+`tests/test_v9_research.py`, `tests/test_kalshi_public.py`, and `tests/test_odds_api.py` verify threshold identity, strict rule mismatch rejection, timestamp order, future data exclusion, idempotent storage, executable-vs-indicative classification, provider parsing and deterministic replay. These are mathematical/engineering checks only.

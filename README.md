@@ -157,6 +157,18 @@ python odds_api.py --db data/raw/v9_markets.sqlite3 --include-props --max-events
 The provider advertises a free monthly quota for current odds, but historical odds
 are paid-plan-only. No key was configured for the captured experiment.
 
+International Polymarket books use a separate, explicit manifest and never share
+the US adapter's market IDs:
+
+```bash
+python polymarket_international.py --manifest reviewed_poly_intl.csv \
+  --db data/raw/v9_markets.sqlite3
+```
+
+Set `reviewed=true` and `rules_verified=true` only after checking the native
+market's event and settlement rules. A blank template is in
+`data/polymarket_international_manifest_template.csv`.
+
 The collector makes public GET requests only, backs off on rate limits, and writes to
 ignored `data/raw/`. Historical candles are indicative; they do not support executable
 P&L. Each experiment stores its dataset hash and configuration. Read

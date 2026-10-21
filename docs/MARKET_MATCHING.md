@@ -15,3 +15,5 @@ Keep native event/market/contract IDs, participant IDs, exact threshold text, pe
 Reject missing/ambiguous player or event identifiers, timezone/date mismatch, different stat definitions, threshold cutoff mismatch, regulation/full-game mismatch, overtime mismatch, void/DNP mismatch, or conflicting event postponement rules. Matching player/team names alone is insufficient.
 
 Current Kalshi ingestion stores venue-native markets and deliberately records zero canonical event matches. US Polymarket and international Polymarket are never assumed equivalent.
+
+The international CLOB adapter accepts a reviewed manifest instead of discovering or matching automatically. Its `REVIEWED` state means the supplied mapping and rules flags were set by the operator; the program does not independently audit them.

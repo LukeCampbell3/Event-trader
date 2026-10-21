@@ -16,7 +16,8 @@ All internal timestamps are UTC. Captures must retain source-native identifiers 
 
 - Polymarket US and Polymarket international are separate products and are not cross-mapped.
 - US reader remains `us_feed.py`, based on the official [Polymarket US Python SDK](https://github.com/Polymarket/polymarket-us-python). SDK docs describe public discovery/BBO/book methods. Direct unauthenticated endpoint probe during this run returned HTTP 401 with a missing API key header. No credentials were available; no key was requested or stored.
-- The older international reader under `legacy/` can query public price history, but those prices are indicative and do not establish historical executable bids/asks. Do not mix US and international market contracts.
+- New `polymarket_international.py` captures public CLOB L2 only for explicit rows in `data/polymarket_international_manifest_template.csv`. Each mapping must be manually reviewed with settlement rules verified and must identify whether the token is the YES or NO outcome; it writes a separate source identity and local observation timestamp. No such reviewed market mapping was supplied, so no international book was captured in this run. The older international history reader under `legacy/` can query indicative price history, not historical executable bids/asks.
+- A Gamma public-search smoke check returned HTTP 200 but only old 2024 NBA event listings for the query used; it did not supply a current, manually mapped game contract. No data from that response entered the experiment.
 - No Polymarket history or order book is used in the reported real-data experiment until exact contracts are resolved and timestamp availability is documented.
 
 ## Sportsbooks
@@ -28,6 +29,7 @@ All internal timestamps are UTC. Captures must retain source-native identifiers 
 ## NBA outcomes
 
 - The requested official NBA CDN scoreboard endpoint `https://cdn.nba.com/static/json/liveData/scoreboard/todaysScoreboard_00.json` returned HTTP 403 in this environment on 2026-10-21. No access controls were bypassed.
+- A public The Odds API scores endpoint is documented for recent results but is not an official NBA result source; the free plan's availability/coverage was not tested without a key.
 - Kalshi result fields are retained separately as venue settlement labels; they are not labeled independently verified official box scores.
 - Box-score/result integration remains blocked until an accessible authorized official source or user-provided official export is configured.
 

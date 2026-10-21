@@ -43,17 +43,20 @@ def _scores(p, y):
     return (p-y)**2, -(y*math.log(p)+(1-y)*math.log(1-p))
 
 
-def _power_estimate(rows, cluster_key, margin=.01):
+def _power_estimate(rows, cluster_key):
     grouped=defaultdict(list)
     for r in rows: grouped[r[cluster_key]].append(_scores(r["p"],r["y"])[0]-.25)
     means=[sum(x)/len(x) for x in grouped.values()]
-    if len(means)<2: return {"clusters":len(means),"cluster_sd":None,"estimated_clusters_for_1pp_improvement_80pct_power":None}
+    if len(means)<30:
+        return {"clusters":len(means),"required_clusters":None,
+                "reason":"pilot has fewer than 30 independent clusters; variance estimate too unstable for a sample-size claim"}
     sigma=stdev(means)
     # Normal approximation: two-sided alpha=.05, 80% power, paired score difference.
     return {"clusters":len(means),"cluster_sd_brier_difference":round(sigma,6),
             "approx_required_clusters_for_1pp":math.ceil(((1.96+.84)*sigma/.01)**2),
             "approx_required_clusters_for_2pp":math.ceil(((1.96+.84)*sigma/.02)**2),
             "approx_required_clusters_for_5pp":math.ceil(((1.96+.84)*sigma/.05)**2),
+            "approx_min_detectable_abs_effect_at_current_n":round((1.96+.84)*sigma/math.sqrt(len(means)),6),
             "assumptions":"Normal approximation, paired Brier difference, alpha=.05 two-sided, 80% power; pilot variance only"}
 
 
@@ -174,14 +177,19 @@ def analyze(db_path: str, output: str):
 
     # Market-only, fixed zero-parameter momentum ablation. Chronological 70/30
     # split by event date; no selected parameters and no outcome features.
-    events=sorted({r["event_id"]:r["event_date"] for r in movement_series}.items(),key=lambda x:x[1])
-    test_ids={e for e,_ in events[int(len(events)*.7):]}
+    events=sorted({r["event_id"]:r["event_date"] for r in movement_series}.items(),key=lambda x:(x[1],x[0]))
+    event_dates=sorted({date for _,date in events})
+    date_cut=max(1,int(len(event_dates)*.7)) if event_dates else 0
+    test_dates=set(event_dates[date_cut:])
+    test_ids={e for e,date in events if date in test_dates}
     holdout=[r for r in movement_series if r["event_id"] in test_ids]
     if holdout:
         mae0=sum(abs(r["actual_next"]-r["no_change"]) for r in holdout)/len(holdout)
         mae1=sum(abs(r["actual_next"]-r["momentum"]) for r in holdout)/len(holdout)
         metrics["one_hour_momentum_test"]={"method":"last one-hour probability change extrapolated one hour; clipped to (0,1)",
-             "split":"chronological last 30% of unique event tickers","train_event_count":len(events)-len(test_ids),
+             "split":"chronological final 30% of unique event dates; no date is split across train and test",
+             "train_event_count":len(events)-len(test_ids),"train_end_date":event_dates[date_cut-1] if date_cut else None,
+             "test_start_date":event_dates[date_cut] if date_cut<len(event_dates) else None,
              "test_event_count":len(test_ids),"test_rows":len(holdout),"no_change_MAE":round(mae0,6),"momentum_MAE":round(mae1,6),
              "MAE_improvement_positive_is_better":round(mae0-mae1,6),
              "cluster_bootstrap_95pct_improvement":_bootstrap_cluster_ci(holdout,lambda r:abs(r["actual_next"]-r["no_change"])-abs(r["actual_next"]-r["momentum"]))}
@@ -201,7 +209,7 @@ def analyze(db_path: str, output: str):
     result={"manifest":manifest,"market_calibration":metrics}
     Path(output).parent.mkdir(parents=True,exist_ok=True)
     experiment_id=manifest["experiment_id"]
-    config={"market_series":"KXNBAGAME","quote":"historical Kalshi candle midpoint","decision_rule":"latest quote at or before 00:00 UTC one day before ticker event date","calibration_baseline":"constant 0.5","movement_model":"fixed one-hour last-return extrapolation; chronological last-30-percent event holdout","bootstrap_repetitions":3000,"random_seed":41}
+    config={"market_series":"KXNBAGAME","quote":"historical Kalshi candle midpoint","decision_rule":"latest quote at or before 00:00 UTC one day before ticker event date","calibration_baseline":"constant 0.5","movement_model":"fixed one-hour last-return extrapolation; chronological last-30-percent event-date holdout","bootstrap_repetitions":3000,"random_seed":41}
     with closing(sqlite3.connect(db_path)) as db, db:
         db.execute("INSERT OR REPLACE INTO research_experiments(experiment_id,created_ts,git_commit,dataset_hash,config_json,train_start,train_end,test_start,test_end,results_json,interpretation,promotion_decision) VALUES(?,?,?,?,?,?,?,?,?,?,?,?)",
                    (experiment_id,manifest["created_utc"],manifest["git_commit"],manifest["dataset_sha256"],json.dumps(config,sort_keys=True),
