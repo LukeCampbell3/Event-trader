@@ -188,3 +188,7 @@ are retained under `legacy/`. They can provide reference
 probability flow but must not be treated as tradable US Polymarket order books.
 No cross-venue contract arbitrage is valid without identical rules, fresh asks,
 size, and the ability to trade *both* venues in your jurisdiction.
+
+## V9 research report
+
+docs/V9_RESEARCH_REPORT.md records the actual Kalshi public-data experiment, held-out movement result, calibration diagnostics, coverage limits, and current acceptance status. It reports no validated edge.
