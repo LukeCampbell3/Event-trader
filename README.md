@@ -1,4 +1,4 @@
-# NBA Polymarket Trader v8 — PAPER-ONLY RESEARCH SYSTEM
+# NBA Prediction-Market Research System — PAPER-ONLY
 
 **STATUS: NOT PROFIT VALIDATED. NO REAL ORDERS. 0 verified actionable edges.**
 
@@ -6,6 +6,10 @@ This version redirects the prior v7 shoal (lead/lag / convergence) into a US-ori
 Polymarket player-prop + game-event scanner. It deliberately does not automate trading
 until a statistically supported strategy, legally accessible account, execution
 semantics, fees, and position reconciliation have passed independent certification.
+
+The V9 research branch adds read-only Kalshi data collection, a normalized SQLite
+store, strict contract identity checks, and timestamp-aware replay diagnostics. These
+add research capability without changing the release gate above.
 
 ## Official venue distinction
 
@@ -103,8 +107,8 @@ keys or US API private credentials into this chat or source files.
 
 ## Known limitations
 
-- The sandbox executing this research cannot reach Polymarket US or sportsbook
-  servers directly; live fetch and authenticated execution were **not tested**.
+- Polymarket US direct discovery returned HTTP 401 in the V9 environment; the public
+  SDK path remains unvalidated here. No sportsbook feed is connected.
 - No real paired sportsbook quote feed is attached. The prior Oct 20 published
   excerpts are unsynchronized and not safe for execution.
 - Usable alternating prop markets depend on what Polymarket US actually lists.
@@ -127,10 +131,48 @@ A missing side, unknown event mapping, invented capture timestamp or settlement
 mismatch is rejected. This is not a live sportsbook scraper; use an authorized
 source and verify that odds are still offered before any trading decision.
 
+### V9 public data research (read-only)
+
+Install `requests` from `requirements.txt`, then capture Kalshi public listings and
+current L2 order books. The data retain Kalshi native identifiers and are not
+automatically matched to another venue:
+
+```bash
+python kalshi_public.py current --db data/raw/v9_markets.sqlite3 --max-per-series 1000
+python kalshi_public.py history --db data/raw/v9_markets.sqlite3 \
+  --series KXNBAGAME --limit-per-series 250 --full-from-open --interval-minutes 60
+python kalshi_public.py hydrate --db data/raw/v9_markets.sqlite3
+python v9_experiments.py --db data/raw/v9_markets.sqlite3 \
+  --output results/v9_kalshi_experiment.json
+```
+
+An optional free-tier sportsbook snapshot can be collected by setting
+`ODDS_API_KEY` in the private environment and running:
+
+```bash
+python odds_api.py --db data/raw/v9_markets.sqlite3
+python odds_api.py --db data/raw/v9_markets.sqlite3 --include-props --max-events 2
+```
+
+The provider advertises a free monthly quota for current odds, but historical odds
+are paid-plan-only. No key was configured for the captured experiment.
+
+The collector makes public GET requests only, backs off on rate limits, and writes to
+ignored `data/raw/`. Historical candles are indicative; they do not support executable
+P&L. Each experiment stores its dataset hash and configuration. Read
+`docs/V9_RESEARCH_REPORT.md` before interpreting any metric. Repeat current captures
+prospectively and freeze decisions in the paper ledger; one snapshot is not prospective
+validation.
+
+The initial real-data experiment found worse game-probability calibration than a
+constant 50% baseline across 49 events. A fixed one-hour momentum extrapolation also
+lost to a no-change forecast in the chronological holdout. No cross-venue edge or
+executable historical return was established.
+
 ### Optional external market sensors
 
-The prior v7 read-only Kalshi and international Polymarket.com adapters and
-lead/lag simulation are retained under `legacy/`. They can provide reference
+The prior v7 international Polymarket.com adapters and simulated lead/lag experiment
+are retained under `legacy/`. They can provide reference
 probability flow but must not be treated as tradable US Polymarket order books.
 No cross-venue contract arbitrage is valid without identical rules, fresh asks,
 size, and the ability to trade *both* venues in your jurisdiction.
